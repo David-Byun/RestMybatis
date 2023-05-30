@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends BaseTimeEntity {
+    //Long : reference type null 값을 가질수 있음. primary key는 null 값을 가질 수 없음
     private long user_id;
     @NonNull
     private String username;
