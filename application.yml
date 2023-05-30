@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: "jdbc:mysql://test.cqydj3wsghcx.ap-northeast-2.rds.amazonaws.com:3306/test?serverTimezone=Asia/Seoul"
+    username: root
+    password: qusek!414
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8888 # 포트는 자유롭게 설정해주세요
+
+  # application.yml
+decorator.datasource.p6spy:
+  enable-logging: true
+  multiline: true
+  logging: slf4j
+  tracing.include-parameter-values: true
