@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.alpaco.dev.mapper.ReservationMapper">
+    <select id="findByIdAndUserId" resultType="com.alpaco.dev.entity.Reservation" parameterType="Long">
+        SELECT reservation_id     as id,
+        room_id            as room,
+        user_id            as user,
+        total_price       as totalPrice,
+        total_guest       as totalGuest,
+        start_date        as startDate,
+        end_date          as endDate,
+        status,
+        is_review_created as isReviewCreated,
+        createdAt,
+        updatedAt,
+        reservation_code  as reservationCode
+        FROM Reservation
+        WHERE reservation_id = #{reservationId}
+        AND user_id = #{userId}
+    </select>
+
+    <update id="updateReviewStatus" parameterType="Long">
+        UPDATE Reservation
+        SET is_review_created = 1
+        WHERE reservation_id = #{reservationId}
+    </update>
+</mapper>

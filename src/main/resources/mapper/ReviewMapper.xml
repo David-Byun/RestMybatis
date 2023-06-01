@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.alpaco.dev.mapper.ReviewMapper">
+    <resultMap id="ResultMap" type="com.alpaco.dev.dto.review.ReviewListResponseDto">
+        <id column="reviewId" property="reviewId"/>
+        <id column="reservationId" property="reservationId"/>
+        <id column="score" property="score"/>
+        <id column="content" property="content"/>
+        <id column="updatedAt" property="updatedAt"/>
+        <collection property="reviewImageUrls" column="reviewId" select="findAllDescImgList"/>
+    </resultMap>
+    <select id="findAllDesc" resultMap="ResultMap" parameterType="int">
+        SELECT r.review_id      as reviewId,
+        r.reservation_id as reservationId,
+        r.score,
+        r.content,
+        r.updatedAt
+        FROM Review r
+        left join Reservation r2 on r.reservation_id = r2.reservation_id
+        WHERE r.status = 'ACTIVE'
+        and r2.room_id = #{roomId}
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="findAllDescImgList" resultType="String">
+        SELECT review_image_url
+        FROM ReviewImage
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <resultMap id="ReviewResultMap" type="com.alpaco.dev.dto.review.ReviewListResponseDto">
+        <id property="reviewId" column="reviewId"/>
+        <id property="reservationId" column="reservationId"/>
+        <id property="score" column="score"/>
+        <id property="content" column="content"/>
+        <id property="updatedAt" column="updatedAt"/>
+        <collection property="reviewImageUrls" column="reviewId" select="findByIdImgList"/>
+    </resultMap>
+    <select id="findById" resultMap="ReviewResultMap" parameterType="int">
+        SELECT r.review_id      as reviewId,
+               r.reservation_id as reservationId,
+               r.score,
+               r.content,
+               r.updatedAt
+        FROM Review r
+                 left join Reservation R2 on r.reservation_id = R2.reservation_id
+        WHERE r.status = 'ACTIVE'
+          and r.review_id = ${reviewId};
+    </select>
+    <select id="findByIdImgList" resultType="String">
+        SELECT review_image_url
+        FROM ReviewImage
+        WHERE review_id = ${reviewId};
+    </select>
+
+
+    <insert id="save" parameterType="com.alpaco.dev.dto.review.ReviewSaveRequestDto" useGeneratedKeys="true"
+            keyProperty="review_id">
+        <!-- 리뷰 안의 reservation 의 id를 가져옴-->
+        INSERT INTO Review (reservation_id, score, content, status)
+        VALUES (#{review.reservation.id}, #{review.score}, #{review.content}, #{review.status})
+    </insert>
+
+</mapper>

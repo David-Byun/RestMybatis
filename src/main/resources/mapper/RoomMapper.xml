@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.alpaco.dev.mapper.RoomMapper">
+    <select id="findAllDesc" resultType="com.alpaco.dev.dto.room.RoomListResponseDto">
+        SELECT r.room_id,
+        r.address1 as city,
+        r.address2 as district,
+        r.price,
+        r.main_image as roomMainImage,
+        count(rv.review_id) as review_count,
+        ifnull(avg(rv.score), 0) as averageReviewScore
+        From Room r
+        left join Reservation rs on (r.room_id = rs.room_id)
+        left join Review rv on (rs.reservation_id = rv.reservation_id)
+        WHERE r.status = 'ACTIVE'
+        group by r.room_id
+        <trim prefix="ORDER BY">
+            <if test="orderKind == 'ID_DESC'">r.room_id DESC</if>
+            <if test="orderKind == 'PRICE_DESC'">r.price DESC</if>
+            <if test="orderKind == 'PRICE_ASC'">r.price ASC</if>
+            <if test="orderKind == 'REVIEW_COUNT_DESC'">review_count DESC</if>
+            <if test="orderKind == 'AVERAGE_REVIEW_SCORE_DESC'">review_average_score DESC</if>
+        </trim>
+    </select>
+
+    <select id="findById" resultType="String" parameterType="Long">
+        SELECT status
+        FROM Room
+        WHERE room_id = #{roomId}
+    </select>
+    <!-- findByRoomId -->
+    <resultMap id="ResultMap" type="com.alpaco.dev.dto.room.RoomDetailResponseDto">
+        <id property="roomId" column="roomId"/>
+        <id property="hostName" column="hostName"/>
+        <id property="metropolitan" column="metropolitan"/>
+        <id property="city" column="city"/>
+        <id property="town" column="town"/>
+        <id property="latitude" column="latitude"/>
+        <id property="longitude" column="longitude"/>
+        <id property="roomName" column="roomName"/>
+        <id property="price" column="price"/>
+        <id property="maxGuest" column="maxGuest"/>
+        <id property="roomDecription" column="roomDecription"/>
+        <id property="checkinTime" column="check_in_time"/> <!-- 여기를 주목해주세요  -->
+        <id property="checkoutTime" column="checkoutTime"/>
+        <id property="roomAverageScore" column="roomAverageScore"/>
+        <id property="reviewCount" column="reviewCount"/>
+        <collection property="roomImageUrls" column="roomId" select="roomImagesAll"/>
+    </resultMap>
+
+    <select id="findByRoomId" resultMap="ResultMap" parameterType="Long">
+        SELECT r.room_id                                                   as roomId,
+        (select u.nickname from User u where r.user_id = u.user_id) as hostName,
+        r.address1                                                  as metropolitan,
+        r.address2                                                  as city,
+        r.address3                                                  as town,
+        r.latitude                                                  as latitude,
+        r.longitude                                                 as longitude,
+        r.room_name                                                 as roomName,
+        r.price                                                     as price,
+        r.max_guest                                                 as maxGuest,
+        r.description                                               as roomDecription,
+        r.check_in_time,
+        r.check_out_time                                            as checkoutTime,
+        ifnull(avg(rv.score), 0)                                    as roomAverageScore,
+        count(rv.review_id)                                         as reviewCount
+        FROM Room r
+        left join Reservation rs on r.room_id = rs.room_id
+        left join Review rv on rs.reservation_id = rv.reservation_id
+        where r.status = 'ACTIVE'
+        and r.room_id = #{roomId}
+        group by r.room_id
+    </select>
+    <select id="roomImagesAll" resultType="String">
+        SELECT room_image_url
+        FROM RoomImage
+        WHERE room_id = #{roomId}
+    </select>
+</mapper>

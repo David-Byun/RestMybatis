@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.alpaco.dev.mapper.ReviewImageMapper">
+    <insert id="save" parameterType="com.alpaco.dev.dto.review.ReviewSaveRequestDto">
+        INSERT INTO ReviewImage (review_id, review_image_url)
+        VALUES (#{reviewImage.review.review_id}, #{reviewImage.reviewImageUrl})
+    </insert>
+
+</mapper>

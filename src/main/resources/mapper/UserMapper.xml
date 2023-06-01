@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.alpaco.dev.mapper.UserMapper">
+<!--    데이터 베이스에 insert를 하고 유저ID는 Entity에 있는 값이다.-->
+    <insert id="saveUser" parameterType="com.alpaco.dev.dto.user.UserSignUpRequestDto" useGeneratedKeys="true" keyProperty="user_id">
+        INSERT INTO User (username, nickname, birth, email, password, status, privacy_agreement, marketing_agreement,
+        host_permission, oauth_provider)
+        VALUES (#{username}, #{nickname}, #{birth}, #{email}, #{password}, #{status}, #{privacyAgreement},
+        #{marketingAgreement}, #{hostPermission}, #{oauthProvider})
+    </insert>
+
+    <select id="emailCheck" parameterType="java.lang.String" resultType="int">
+        SELECT COUNT(*) FROM User where email = #{email}
+    </select>
+
+    <select id="findUserByEmail" resultType="com.alpaco.dev.dto.user.UserSignUpRequestDto">
+        SELECT username, nickname, birth, email, password, status, privacy_agreement, marketing_agreement,
+        host_permission, oauth_provider
+        FROM User
+        WHERE email = #{email}
+    </select>
+
+    <select id="findUserIdByEmail" parameterType="java.lang.String" resultType="Long">
+        SELECT user_id FROM User where email = #{email}
+    </select>
+</mapper>
